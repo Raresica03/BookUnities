@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 
 enum class Screen {
-    Home, Login, Registration, JoinCreate, Profile, Join
+    Home, Login, Registration, JoinCreate, Profile, Join, AboutUs
 }
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity() {
             when (currentScreen) {
                 Screen.Home -> HomeScreen(
                     onNavigateToLogin = { currentScreen = Screen.Login },
-                    onNavigateToJoinCreate = { currentScreen = Screen.JoinCreate }
+                    onNavigateToJoinCreate = { currentScreen = Screen.JoinCreate },
+                    onNavigateToAboutUs = { currentScreen = Screen.AboutUs }
                 )
 
                 Screen.Login -> LoginScreen(
@@ -42,18 +43,30 @@ class MainActivity : AppCompatActivity() {
 
                 Screen.JoinCreate -> JoinCreateScreen(
                     onProfileClick = { currentScreen = Screen.Profile },
-                    onJoinClick = {currentScreen = Screen.Join}
+                    onJoinClick = { currentScreen = Screen.Join }
                 )
-                
-                Screen.Profile -> ProfileScreen(
-                    onLogout = { /*TODO*/ }, 
-                    onDeleteAccount = { /*TODO*/ },
-                    onLeaveCommunity = { /*TODO*/ }) {
 
-                }
+                Screen.Profile -> ProfileScreen(
+                    onLogout = {
+                        auth.signOut()
+                        currentUser = null
+                        currentScreen = Screen.Home
+                    },
+                    onDeleteAccount = {
+                        auth.signOut()
+                        currentUser = null
+                        currentScreen = Screen.Home
+                    },
+                    onLeaveCommunity = { /*TODO*/ },
+                    onBackPress = { currentScreen = Screen.JoinCreate })
 
                 Screen.Join -> JoinScreen(
-                    onProfileClick = { currentScreen = Screen.Profile }
+                    onProfileClick = { currentScreen = Screen.Profile },
+                    onBackPress = {currentScreen = Screen.Home}
+                )
+
+                Screen.AboutUs -> AboutPage(
+                    onBackPress = { currentScreen = Screen.Home }
                 )
             }
         }

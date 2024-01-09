@@ -13,6 +13,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileScreen(
@@ -29,6 +34,8 @@ fun ProfileScreen(
     onLeaveCommunity: () -> Unit,
     onBackPress: () -> Unit
 ) {
+
+    val auth = FirebaseAuth.getInstance()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,12 +86,17 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         // Back navigation button
-        Button(onClick = onBackPress, modifier = Modifier.align(Alignment.Start)) {
-//            Image(
-//                imageVector = ImageVector.vectorResource(id = R.drawable.ic_back_arrow),
-//                contentDescription = "Back",
-//                modifier = Modifier.size(24.dp)
-//            )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Button(onClick = onBackPress) {
+                Text("Back")
+            }
+            Spacer(modifier = Modifier.height(80.dp))
         }
+
     }
+
+
 }
