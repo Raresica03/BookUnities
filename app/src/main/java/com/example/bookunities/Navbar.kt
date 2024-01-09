@@ -25,7 +25,7 @@ fun Navbar(onProfileClick: () -> Unit) {
         if (currentUser != null)
             currentUser.email ?: "Unknown"
         else "Guest"
-    val profilePicture = painterResource(R.drawable.blank_profile) // Replace with actual profile picture resource
+    val profilePicture =  (R.drawable.blank_profile) // Replace with actual profile picture resource
 
     // Define the colors for the background and shadow
     val backgroundColor = Color.LightGray.copy(alpha = 0.95f) // Slightly gray and translucent

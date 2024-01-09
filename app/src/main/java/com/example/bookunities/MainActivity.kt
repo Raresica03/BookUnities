@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 
 enum class Screen {
-    Home, Login, Registration, JoinCreate, Profile, Join, AboutUs, Create
+    Home, Login, Registration, JoinCreate, Profile, Join, AboutUs, Create, CommunityHome
 }
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var currentScreen by remember { mutableStateOf(Screen.Home) }
+            var currentScreen by remember { mutableStateOf(Screen.CommunityHome) }
             val auth = FirebaseAuth.getInstance()
             var currentUser by remember { mutableStateOf(auth.currentUser) }
 
@@ -71,6 +71,14 @@ class MainActivity : AppCompatActivity() {
 
                 Screen.AboutUs -> AboutPage(
                     onBackPress = { currentScreen = Screen.Home }
+                )
+                Screen.CommunityHome -> CommunityHomeScreen(
+                    onProfileClick = {currentScreen = Screen.Profile},
+                    onMyLibraryClick ={},
+                    onRentedBooksClick = {},
+                    onPostBooksClick = {},
+                    onFindBooksClick = {},
+                    onAnnouncementsClick = {}
                 )
             }
         }
