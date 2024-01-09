@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836700997368",
+    "project_id": "bookunities",
+    "storage_bucket": "bookunities.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836700997368:android:ebde2ea2126d61a27bdd0d",
+        "android_client_info": {
+          "package_name": "com.example.bookunities"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5tN6Ew5Q_r_faoRpUaL-X9_bh8BN5e0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
