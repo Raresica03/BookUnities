@@ -9,13 +9,6 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-<<<<<<< HEAD
-fun JoinScreen(onProfileClick: () -> Unit) {
-    Column {
-        Navbar(
-            onProfileClick = onProfileClick
-        )
-=======
 fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit) {
     var communityCode by remember { mutableStateOf("") }
     var showCommunityCode by remember { mutableStateOf(false) }
@@ -81,7 +74,6 @@ fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(80.dp))
         }
->>>>>>> 4d584c02c31d76f94c538388c21ef67283eaf1d5
     }
 
 }
