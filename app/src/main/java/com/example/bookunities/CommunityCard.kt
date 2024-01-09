@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,8 +20,8 @@ import androidx.compose.ui.unit.dp
 fun CommunityCard(
     communityImage: Painter,
     communityName: String,
-    numberOfUsers: Int,
-    onJoinClicked: () -> Unit
+    communityId: String,
+    onJoinClicked: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -32,7 +31,7 @@ fun CommunityCard(
         Image(
             painter = communityImage,
             contentDescription = "Community Image",
-            modifier = Modifier.size(60.dp) // Set the image size
+            modifier = Modifier.size(60.dp)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -43,11 +42,9 @@ fun CommunityCard(
                 .align(Alignment.CenterVertically)
         ) {
             Text(text = communityName, modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Users: $numberOfUsers", modifier = Modifier.fillMaxWidth())
         }
 
-        Button(onClick = onJoinClicked) {
+        Button(onClick = { onJoinClicked(communityId) }) {
             Text("Join")
         }
     }

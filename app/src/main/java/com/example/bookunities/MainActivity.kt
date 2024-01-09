@@ -63,10 +63,11 @@ class MainActivity : AppCompatActivity() {
 
                 Screen.Join -> JoinScreen(
                     onProfileClick = { currentScreen = Screen.Profile },
-                    onBackPress = {currentScreen = Screen.Home}
+                    onBackPress = {currentScreen = Screen.JoinCreate},
                 )
 
                 Screen.Create -> CreateScreen(
+                    onBackPress = {currentScreen = Screen.JoinCreate}
                 )
 
                 Screen.AboutUs -> AboutPage(

@@ -33,7 +33,7 @@ import com.google.firebase.storage.StorageReference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreen() {
+fun CreateScreen(onBackPress:() -> Unit) {
     var communityName by remember { mutableStateOf("") }
     var communityDescription by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -114,6 +114,15 @@ fun CreateScreen() {
             enabled = communityName.isNotEmpty() && communityDescription.isNotEmpty() && imageUri != null
         ) {
             Text("Create Community")
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Button(onClick = onBackPress) {
+                Text("Back")
+            }
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
