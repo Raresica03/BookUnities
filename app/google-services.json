@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "836700997368",
-    "project_id": "bookunities",
-    "storage_bucket": "bookunities.appspot.com"
+    "project_number": "649398449622",
+    "project_id": "bookunities-af484",
+    "storage_bucket": "bookunities-af484.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:836700997368:android:ebde2ea2126d61a27bdd0d",
+        "mobilesdk_app_id": "1:649398449622:android:310af031f6c9e9e056e077",
         "android_client_info": {
           "package_name": "com.example.bookunities"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC5tN6Ew5Q_r_faoRpUaL-X9_bh8BN5e0E"
+          "current_key": "AIzaSyAp1QciFM2KOnKAelModHy5ST12AY4TK88"
         }
       ],
       "services": {

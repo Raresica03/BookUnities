@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun JoinCreateScreen(onProfileClick: () -> Unit, onJoinClick:() -> Unit) {
+fun JoinCreateScreen(onProfileClick: () -> Unit, onJoinClick:() -> Unit, onCreateClick:() -> Unit) {
     Column {
         Navbar(
             onProfileClick = onProfileClick
@@ -67,7 +67,7 @@ fun JoinCreateScreen(onProfileClick: () -> Unit, onJoinClick:() -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { /* Handle create action */ },
+                    onClick = onCreateClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Create", fontSize = 18.sp)

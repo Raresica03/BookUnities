@@ -9,6 +9,5 @@ fun JoinScreen(onProfileClick: () -> Unit) {
         Navbar(
             onProfileClick = onProfileClick
         )
-
     }
 }

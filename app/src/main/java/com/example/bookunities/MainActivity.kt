@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 
 enum class Screen {
-    Home, Login, Registration, JoinCreate, Profile, Join
+    Home, Login, Registration, JoinCreate, Profile, Join, Create
 }
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity() {
 
                 Screen.JoinCreate -> JoinCreateScreen(
                     onProfileClick = { currentScreen = Screen.Profile },
-                    onJoinClick = {currentScreen = Screen.Join}
+                    onJoinClick = {currentScreen = Screen.Join},
+                    onCreateClick = {currentScreen = Screen.Create}
                 )
                 
                 Screen.Profile -> ProfileScreen(
@@ -53,7 +54,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 Screen.Join -> JoinScreen(
-                    onProfileClick = { currentScreen = Screen.Profile }
+                    onProfileClick = { currentScreen = Screen.Profile },
+                )
+
+                Screen.Create -> CreateScreen(
+
                 )
             }
         }
