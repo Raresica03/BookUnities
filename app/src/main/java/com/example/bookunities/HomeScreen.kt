@@ -1,27 +1,21 @@
 package com.example.bookunities
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 
-
 @Composable
-fun HomeScreen(onNavigateToLogin: () -> Unit, onNavigateToJoinCreate: () -> Unit) {
+fun HomeScreen(
+    onNavigateToLogin: () -> Unit,
+    onNavigateToJoinCreate: () -> Unit,
+    onNavigateToAboutUs: () -> Unit
+) {
     val auth = FirebaseAuth.getInstance()
     var currentUser by remember { mutableStateOf(auth.currentUser) }
 
@@ -29,22 +23,21 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, onNavigateToJoinCreate: () -> Unit
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (currentUser == null) {
+        Spacer(modifier = Modifier.weight(1f, true)) // Flexible spacer to push content to center
 
+        if (currentUser == null) {
+            // User not logged in UI
             Text("Login to see the Home Page", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(20.dp))
-
             Button(onClick = onNavigateToLogin) {
                 Text("Go to Login")
             }
         } else {
-
+            // User logged in UI
             Text("Welcome to the Home Page", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(20.dp))
-
             Button(onClick = {
                 auth.signOut()
                 currentUser = null
@@ -52,12 +45,18 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, onNavigateToJoinCreate: () -> Unit
                 Text("Logout")
             }
             Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = {
-                onNavigateToJoinCreate()
-            }) {
+            Button(onClick = onNavigateToJoinCreate) {
                 Text("Go to Join/Create")
             }
-
         }
+
+        Spacer(modifier = Modifier.weight(1f, true)) // Flexible spacer to balance the layout
+
+        // About Us button at the bottom
+        Button(onClick = onNavigateToAboutUs) {
+            Text("About Us")
+        }
+
+        Spacer(modifier = Modifier.height(80.dp)) // Fixed spacer to maintain 80.dp from the bottom
     }
 }
