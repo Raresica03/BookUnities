@@ -36,6 +36,11 @@ fun ProfileScreen(
 ) {
 
     val auth = FirebaseAuth.getInstance()
+    val currentUser = auth.currentUser
+    val username =
+        if (currentUser != null)
+            currentUser.email ?: "Unknown"
+        else "Guest"
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,18 +56,9 @@ fun ProfileScreen(
                 .clip(CircleShape)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Profile detail placeholders
-        for (i in 1..3) {
-            Text(
-                text = "Detail $i",
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-            )
-        }
+        Text(text = username, modifier = Modifier.align(Alignment.CenterHorizontally))
 
         Spacer(modifier = Modifier.height(32.dp))
 
