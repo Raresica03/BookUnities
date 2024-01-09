@@ -18,13 +18,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var currentScreen by remember { mutableStateOf(Screen.CommunityHome) }
             val auth = FirebaseAuth.getInstance()
             var currentUser by remember { mutableStateOf(auth.currentUser) }
-
+            // Determine the initial screen based on user status and communityId
+            var initialScreen = when {
+                currentUser == null -> Screen.Home // User not logged in
+                currentUser.communityUserId.isNullOrEmpty() -> Screen.Home // Logged in but no communityId
+                else -> Screen.CommunityHome // Logged in and has communityId
+            }
+            var currentScreen by remember { mutableStateOf(initialScreen) }
             when (currentScreen) {
                 Screen.Home -> HomeScreen(
-                    onNavigateToLogin = { currentScreen = Screen.Login },
+                    onNavigateToLogin = { currentScreen = initialScreen },
                     onNavigateToJoinCreate = { currentScreen = Screen.JoinCreate },
                     onNavigateToAboutUs = { currentScreen = Screen.AboutUs }
                 )
@@ -35,9 +40,9 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 Screen.Registration -> RegistrationScreen(
-                    onRegistrationSuccess = { currentScreen = Screen.Login },
+                    onRegistrationSuccess = { currentScreen = initialScreen },
                     onNavigateToLogin = {
-                        currentScreen = Screen.Login
+                        currentScreen = initialScreen
                     }
                 )
 
@@ -51,26 +56,26 @@ class MainActivity : AppCompatActivity() {
                     onLogout = {
                         auth.signOut()
                         currentUser = null
-                        currentScreen = Screen.Home
+                        currentScreen = initialScreen
                     },
                     onDeleteAccount = {
                         auth.signOut()
                         currentUser = null
-                        currentScreen = Screen.Home
+                        currentScreen = initialScreen
                     },
                     onLeaveCommunity = { /*TODO*/ },
                     onBackPress = { currentScreen = Screen.JoinCreate })
 
                 Screen.Join -> JoinScreen(
                     onProfileClick = { currentScreen = Screen.Profile },
-                    onBackPress = {currentScreen = Screen.Home}
+                    onBackPress = {currentScreen = initialScreen}
                 )
 
                 Screen.Create -> CreateScreen(
                 )
 
                 Screen.AboutUs -> AboutPage(
-                    onBackPress = { currentScreen = Screen.Home }
+                    onBackPress = { currentScreen = initialScreen }
                 )
                 Screen.CommunityHome -> CommunityHomeScreen(
                     onProfileClick = {currentScreen = Screen.Profile},
