@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                 Screen.Join -> JoinScreen(
                     onProfileClick = { currentScreen = Screen.Profile },
                     onBackPress = {currentScreen = Screen.JoinCreate},
+                    onJoinedSuccessfully = { currentScreen = Screen.CommunityHome}
                 )
 
                 Screen.Create -> CreateScreen(

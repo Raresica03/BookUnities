@@ -18,7 +18,7 @@ data class Community(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit) {
+fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit, onJoinedSuccessfully:() -> Unit) {
     var communityCode by remember { mutableStateOf("") }
     var communities by remember { mutableStateOf<List<Community>>(emptyList()) }
     var filteredCommunities by remember { mutableStateOf<List<Community>>(emptyList()) }
@@ -84,7 +84,9 @@ fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit) {
                             communityImage = rememberAsyncImagePainter(community.imageUrl),
                             communityName = community.name,
                             communityId = community.id,
-                            onJoinClicked = { communityId -> handleJoinCommunity(communityId) }
+                            onJoinClicked = { communityId ->
+                                handleJoinCommunity(communityId, onJoinedSuccessfully)
+                            }
                         )
                     }
                 }
@@ -100,7 +102,7 @@ fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit) {
     }
 }
 
-fun handleJoinCommunity(communityId: String) {
+fun handleJoinCommunity(communityId: String, onJoinedSuccessfully:() -> Unit) {
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
     val userId = auth.currentUser?.uid ?: return
@@ -108,7 +110,7 @@ fun handleJoinCommunity(communityId: String) {
     db.collection("users").document(userId)
         .update("communityUserId", communityId)
         .addOnSuccessListener {
-            // Handle successful join
+            onJoinedSuccessfully()
         }
         .addOnFailureListener {
             // Handle failure to join
