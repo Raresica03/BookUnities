@@ -29,9 +29,9 @@ fun AboutPage(onBackPress: () -> Unit) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.blank_profile), // Replace with your logo resource ID
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(100.dp) // Adjust size as needed
+                    painter = painterResource(id = R.drawable.bookunities_logo),
+                    contentDescription = "My WebP Image",
+                    modifier = Modifier.size(120.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 

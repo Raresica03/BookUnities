@@ -9,16 +9,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun HomeScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToJoinCreate: () -> Unit,
-    onNavigateToAboutUs: () -> Unit
+    onNavigateToAboutUs: () -> Unit,
+    onNavigateToCommunity: () -> Unit
 ) {
     val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
     var currentUser by remember { mutableStateOf(auth.currentUser) }
+    var communityUserId by remember { mutableStateOf<String?>(null) }
 
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+
+            db.collection("users").document(currentUser!!.uid).get()
+                .addOnSuccessListener { document ->
+                    communityUserId = document.getString("communityUserId")
+                }
+                .addOnFailureListener {
+                }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,9 +60,16 @@ fun HomeScreen(
                 Text("Logout")
             }
             Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = onNavigateToJoinCreate) {
-                Text("Go to Join/Create")
+            if(communityUserId.isNullOrEmpty()){
+                Button(onClick = onNavigateToJoinCreate) {
+                    Text("Go to Join/Create")
+                }
+            } else{
+                Button(onClick = onNavigateToCommunity) {
+                    Text("Go to Community")
+                }
             }
+
         }
 
         Spacer(modifier = Modifier.weight(1f, true)) // Flexible spacer to balance the layout
