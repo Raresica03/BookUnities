@@ -37,14 +37,14 @@ fun ProfileScreen(
     currentCommunity: Community?,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
-    onLeaveCommunity: () -> Unit,
+    onLeaveCommunity: (User) -> Unit,
     onBackPress: () -> Unit
 ) {
 
     val username = currentUser?.firstName?.ifEmpty { "Guest" }
     val communityName = currentCommunity?.name ?: ""
     var communityTitle = ""
-    communityTitle = if(communityName.isNotEmpty())
+    communityTitle = if (communityName.isNotEmpty())
         "Part of: $communityName community"
     else
         "Not part of a community"
@@ -92,7 +92,18 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // Action buttons
-        Button(onClick = onLeaveCommunity, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            enabled = currentCommunity != null,
+            onClick = {
+                      currentUser?.let { usr ->
+                          leaveCommunity(usr, onLeaveSuccess = {
+                              updatedUser -> onLeaveCommunity(updatedUser)
+                          })
+                      }
+
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Leave Community")
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -122,4 +133,21 @@ fun ProfileScreen(
         }
 
     }
+}
+
+fun leaveCommunity(
+    currentUser: User,
+    onLeaveSuccess: (User) -> Unit
+) {
+    val db = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
+
+    db.collection("users").document(auth.currentUser!!.uid)
+        .update("communityUserId", "")
+        .addOnSuccessListener {
+            val updatedUser = currentUser.copy(communityUserId = "")
+            onLeaveSuccess(updatedUser)
+        }
+        .addOnFailureListener {
+        }
 }

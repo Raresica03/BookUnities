@@ -14,7 +14,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JoinScreen(currentUser:User,onProfileClick: () -> Unit, onBackPress: () -> Unit, onJoinedSuccessfully:() -> Unit) {
+fun JoinScreen(
+    currentUser: User,
+    onProfileClick: () -> Unit,
+    onBackPress: () -> Unit,
+    onJoinedSuccessfully: () -> Unit,
+    onUpdateUser: (User, Community) -> Unit
+) {
     var communityCode by remember { mutableStateOf("") }
     var communities by remember { mutableStateOf<List<Community>>(emptyList()) }
     var filteredCommunities by remember { mutableStateOf<List<Community>>(emptyList()) }
@@ -71,7 +77,10 @@ fun JoinScreen(currentUser:User,onProfileClick: () -> Unit, onBackPress: () -> U
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         } else if (loadError) {
-            Text("Failed to load communities", modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text(
+                "Failed to load communities",
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(modifier = Modifier.weight(1f)) {
@@ -82,7 +91,13 @@ fun JoinScreen(currentUser:User,onProfileClick: () -> Unit, onBackPress: () -> U
                             communityId = community.id,
                             onJoinClicked = { communityId ->
                                 currentUser.communityUserId = communityId
-                                handleJoinCommunity(communityId, onJoinedSuccessfully)
+                                handleJoinCommunity(
+                                    communityId,
+                                    currentUser
+                                ) { updatedUser, updatedCommunity ->
+                                    onUpdateUser(updatedUser, updatedCommunity)
+                                    onJoinedSuccessfully()
+                                }
                             }
                         )
                     }
@@ -90,7 +105,9 @@ fun JoinScreen(currentUser:User,onProfileClick: () -> Unit, onBackPress: () -> U
 
                 Button(
                     onClick = onBackPress,
-                    modifier = Modifier.align(Alignment.Start).padding(16.dp)
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(16.dp)
                 ) {
                     Text("Back")
                 }
@@ -99,18 +116,31 @@ fun JoinScreen(currentUser:User,onProfileClick: () -> Unit, onBackPress: () -> U
     }
 }
 
-fun handleJoinCommunity(communityId: String, onJoinedSuccessfully:() -> Unit) {
+fun handleJoinCommunity(
+    communityId: String,
+    currentUser: User,
+    onSuccess: (User, Community) -> Unit
+) {
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
     val userId = auth.currentUser?.uid ?: return
 
+// Update the user's communityUserId
     db.collection("users").document(userId)
         .update("communityUserId", communityId)
         .addOnSuccessListener {
-            onJoinedSuccessfully()
+            // Fetch the community details
+            db.collection("communities").document(communityId).get()
+                .addOnSuccessListener { communityDoc ->
+                    val updatedCommunity = communityDoc.toObject(Community::class.java)
+                    if (updatedCommunity != null) {
+                        val updatedUser = currentUser.copy(communityUserId = communityId)
+                        onSuccess(updatedUser, updatedCommunity)
+                    }
+                }
+                .addOnFailureListener {
+                }
         }
         .addOnFailureListener {
-            // Handle failure to join
         }
-
 }
