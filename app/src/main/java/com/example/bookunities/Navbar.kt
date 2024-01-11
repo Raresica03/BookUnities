@@ -35,22 +35,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun Navbar(onProfileClick: () -> Unit) {
-    val auth = FirebaseAuth.getInstance()
-    val currentUser = auth.currentUser
-    val db = FirebaseFirestore.getInstance()
-    var firstName by remember { mutableStateOf("Guest") } // Default to "Guest"
+fun Navbar(currentUser:User,onProfileClick: () -> Unit) {
 
-    LaunchedEffect(currentUser) {
-        currentUser?.let { user ->
-            // Fetch user details from Firestore
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { document ->
-                    firstName = document.getString("firstName") ?: "Unknown"
-                }
-        }
-    }
-    val username = firstName.ifEmpty { "Guest" }
+    val username = currentUser.firstName.ifEmpty { "Guest" }
     val profilePicture =  (R.drawable.blank_profile)
     // Define the colors for the background and shadow
     val backgroundColor = Color.LightGray.copy(alpha = 0.95f) // Slightly gray and translucent

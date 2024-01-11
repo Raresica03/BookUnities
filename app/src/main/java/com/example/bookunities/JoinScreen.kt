@@ -12,13 +12,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-data class Community(
-    val name: String, val imageUrl: String, val id: String,
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit, onJoinedSuccessfully:() -> Unit) {
+fun JoinScreen(currentUser:User,onProfileClick: () -> Unit, onBackPress: () -> Unit, onJoinedSuccessfully:() -> Unit) {
     var communityCode by remember { mutableStateOf("") }
     var communities by remember { mutableStateOf<List<Community>>(emptyList()) }
     var filteredCommunities by remember { mutableStateOf<List<Community>>(emptyList()) }
@@ -42,7 +38,7 @@ fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit, onJoinedSucc
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Navbar(onProfileClick = onProfileClick)
+        Navbar(currentUser = currentUser, onProfileClick = onProfileClick)
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
@@ -85,6 +81,7 @@ fun JoinScreen(onProfileClick: () -> Unit, onBackPress: () -> Unit, onJoinedSucc
                             communityName = community.name,
                             communityId = community.id,
                             onJoinClicked = { communityId ->
+                                currentUser.communityUserId = communityId
                                 handleJoinCommunity(communityId, onJoinedSuccessfully)
                             }
                         )
@@ -115,4 +112,5 @@ fun handleJoinCommunity(communityId: String, onJoinedSuccessfully:() -> Unit) {
         .addOnFailureListener {
             // Handle failure to join
         }
+
 }

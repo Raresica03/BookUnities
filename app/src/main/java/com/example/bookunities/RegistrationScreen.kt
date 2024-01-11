@@ -82,6 +82,7 @@ fun RegistrationScreen(onRegistrationSuccess: () -> Unit, onNavigateToLogin: () 
                             val user = auth.currentUser
                             val db = FirebaseFirestore.getInstance()
                             val userInfo = hashMapOf(
+                                "email" to email,
                                 "firstName" to firstName,
                                 "lastName" to lastName,
                                 "phoneNumber" to phoneNumber,
