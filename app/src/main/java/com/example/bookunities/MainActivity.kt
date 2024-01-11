@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.runtime.*
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -17,7 +18,9 @@ enum class Screen {
 }
 
 data class Community(
-    val name: String = "", val imageUrl: String = "", val id: String = "",
+    val name: String = "",
+    val imageUrl: String = "",
+    val id: String = "",
 )
 
 data class User(
@@ -34,13 +37,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val auth = FirebaseAuth.getInstance()
         val db = FirebaseFirestore.getInstance()
+
         setContent {
             var currentUser by remember { mutableStateOf(auth.currentUser) }
             var user by remember { mutableStateOf<User?>(null) }
 
             var community by remember { mutableStateOf<Community?>(null) }
 
-            var initialScreen by remember { mutableStateOf<Screen>(Screen.Home) }
             var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
 
             var isUserDataFetched by remember { mutableStateOf(false) }
@@ -52,23 +55,35 @@ class MainActivity : AppCompatActivity() {
                 currentScreen = Screen.Home
             }
 
-            LaunchedEffect(currentUser) {
-                isUserDataFetched = false
+            val updateUser: (User, Community) -> Unit = { newUser, newCommunity ->
+                user = newUser
+                community = newCommunity
+            }
+
+            val updateUserAfterLeave: (User) -> Unit = { newUser ->
+                user = newUser
+                community = null
+            }
+
+            LaunchedEffect(currentUser, user) {
                 if (currentUser != null) {
-                    // Fetch user data
+                    // Here happens the fetching of data
                     db.collection("users").document(currentUser!!.uid).get()
                         .addOnSuccessListener { document ->
-                            user = document.toObject(User::class.java)
+
+                            val fetchedUser = document.toObject(User::class.java)
+                            user = fetchedUser
                             // Fetch community data if communityId is available
-                            user?.communityUserId?.let { communityId ->
+                            fetchedUser?.communityUserId?.let { communityId ->
                                 if (communityId.isNotEmpty()) {
                                     db.collection("communities").document(communityId).get()
                                         .addOnSuccessListener { communityDoc ->
                                             community = communityDoc.toObject(Community::class.java)
                                         }
+                                } else {
+                                    community = null
                                 }
                             }
-                            isUserDataFetched = true
                         }
                 } else {
                     user = null
@@ -133,7 +148,11 @@ class MainActivity : AppCompatActivity() {
                             currentCommunity = community, // Can be null, and that's okay
                             onLogout = doLogout,
                             onDeleteAccount = doLogout,
-                            onLeaveCommunity = { /*TODO*/ },
+                            onLeaveCommunity = { newUser ->
+                                user = newUser
+                                community = null
+                                currentScreen = Screen.JoinCreate
+                            },
                             onBackPress = {
                                 currentScreen = if (usr.communityUserId.isEmpty())
                                     Screen.JoinCreate
@@ -151,7 +170,9 @@ class MainActivity : AppCompatActivity() {
                             onProfileClick = { currentScreen = Screen.Profile },
                             onBackPress = { currentScreen = Screen.JoinCreate },
                             onJoinedSuccessfully = {
-                                currentScreen = Screen.CommunityHome }
+                                currentScreen = Screen.CommunityHome
+                            },
+                            onUpdateUser = updateUser
                         )
                     }
 
@@ -164,18 +185,18 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 Screen.CommunityHome -> {
-                        user?.let { usr ->
-                            CommunityHomeScreen(
-                                currentUser = usr,
-                                community = community,
-                                onProfileClick = { currentScreen = Screen.Profile },
-                                onMyLibraryClick = {},
-                                onRentedBooksClick = {},
-                                onPostBooksClick = {},
-                                onFindBooksClick = {},
-                                onAnnouncementsClick = {}
-                            )
-                        }
+                    user?.let { usr ->
+                        CommunityHomeScreen(
+                            currentUser = usr,
+                            community = community,
+                            onProfileClick = { currentScreen = Screen.Profile },
+                            onMyLibraryClick = {},
+                            onRentedBooksClick = {},
+                            onPostBooksClick = {},
+                            onFindBooksClick = {},
+                            onAnnouncementsClick = {}
+                        )
+                    }
                 }
             }
         }

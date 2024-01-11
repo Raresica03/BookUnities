@@ -20,7 +20,7 @@ fun HomeScreen(
     onNavigateToAboutUs: () -> Unit,
     onNavigateToCommunity: () -> Unit
 ) {
-    var communityUserId by remember { mutableStateOf<String?>(currentUser?.communityUserId) }
+    val communityUserId by remember { mutableStateOf<String?>(currentUser?.communityUserId) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +47,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
             if(communityUserId.isNullOrEmpty()){
                 Button(onClick = onNavigateToJoinCreate) {
-                    Text("Go to Join/Create")
+                    Text("Welcome to our App!")
                 }
             } else{
                 Button(onClick = onNavigateToCommunity) {
