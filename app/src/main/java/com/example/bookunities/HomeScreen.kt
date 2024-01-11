@@ -13,27 +13,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun HomeScreen(
+    currentUser: User?,
+    onLogout: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToJoinCreate: () -> Unit,
     onNavigateToAboutUs: () -> Unit,
     onNavigateToCommunity: () -> Unit
 ) {
-    val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
-    var currentUser by remember { mutableStateOf(auth.currentUser) }
-    var communityUserId by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-
-            db.collection("users").document(currentUser!!.uid).get()
-                .addOnSuccessListener { document ->
-                    communityUserId = document.getString("communityUserId")
-                }
-                .addOnFailureListener {
-                }
-        }
-    }
+    var communityUserId by remember { mutableStateOf<String?>(currentUser?.communityUserId) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,10 +40,8 @@ fun HomeScreen(
             // User logged in UI
             Text("Welcome to the Home Page", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = {
-                auth.signOut()
-                currentUser = null
-            }) {
+            Button(onClick = onLogout
+            ) {
                 Text("Logout")
             }
             Spacer(modifier = Modifier.height(20.dp))

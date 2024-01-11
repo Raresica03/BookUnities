@@ -30,8 +30,8 @@ import com.google.firebase.auth.FirebaseAuth
 fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegistration: () -> Unit) {
     val auth = FirebaseAuth.getInstance()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("alexia@gmail.com") }
+    var password by remember { mutableStateOf("pass12") }
     var loginMessage by remember { mutableStateOf("") }
 
     // Get the SoftwareKeyboardController instance

@@ -35,6 +35,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun CommunityHomeScreen(
+    currentUser: User,
+    community: Community?,
     onProfileClick: () -> Unit,
     onAnnouncementsClick: () -> Unit,
     onFindBooksClick: () -> Unit,
@@ -42,37 +44,17 @@ fun CommunityHomeScreen(
     onRentedBooksClick: () -> Unit,
     onMyLibraryClick: () -> Unit
 ) {
-    val auth = FirebaseAuth.getInstance()
-    val currentUser = auth.currentUser
-    val db = FirebaseFirestore.getInstance()
-    var communityName by remember { mutableStateOf("") }
-    var communityImage by remember { mutableStateOf("") }
 
-    LaunchedEffect(currentUser) {
-        currentUser?.let { user ->
-            // Fetch the user's communityUserId
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { document ->
-                    val communityUserId = document.getString("communityUserId")
-                    // Now fetch the community details
-                    communityUserId?.let { communityId ->
-                        db.collection("communities").document(communityId).get()
-                            .addOnSuccessListener { communityDoc ->
-                                communityName = communityDoc.getString("name") ?: ""
-                                communityImage = communityDoc.getString("imageUrl") ?: ""
-                                // Use communityName and communityImage in your UI
-                            }
-                    }
-                }
-        }
-    }
+    var communityName by remember { mutableStateOf(community?.name) }
+    var communityImage by remember { mutableStateOf(community?.imageUrl) }
+
     // Same-sized buttons centered in the middle of the page
     val buttonModifier = Modifier
         .height(IntrinsicSize.Min)
         .width(200.dp) // You can adjust the width to your preference
 
     Column {
-        Navbar(onProfileClick = onProfileClick)
+        Navbar(currentUser = currentUser, onProfileClick = onProfileClick)
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -88,15 +70,17 @@ fun CommunityHomeScreen(
                 contentScale = ContentScale.Crop
             )
 
-            Text(
-                text = communityName,
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+            communityName?.let {
+                Text(
+                    text = it,
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

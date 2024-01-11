@@ -16,6 +16,18 @@ enum class Screen {
     Home, Login, Registration, JoinCreate, Profile, Join, AboutUs, Create, CommunityHome
 }
 
+data class Community(
+    val name: String = "", val imageUrl: String = "", val id: String = "",
+)
+
+data class User(
+    val email: String = "",
+    val lastName: String = "",
+    val firstName: String = "",
+    val phoneNumber: String = "",
+    var communityUserId: String = ""
+)
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,36 +36,73 @@ class MainActivity : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         setContent {
             var currentUser by remember { mutableStateOf(auth.currentUser) }
-            var communityUserId by remember { mutableStateOf<String?>(null) }
+            var user by remember { mutableStateOf<User?>(null) }
+
+            var community by remember { mutableStateOf<Community?>(null) }
+
             var initialScreen by remember { mutableStateOf<Screen>(Screen.Home) }
             var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
 
-            LaunchedEffect(currentUser,communityUserId) {
+            var isUserDataFetched by remember { mutableStateOf(false) }
+
+            val doLogout = {
+                auth.signOut()
+                currentUser = null
+                user = null
+                currentScreen = Screen.Home
+            }
+
+            LaunchedEffect(currentUser) {
+                isUserDataFetched = false
                 if (currentUser != null) {
+                    // Fetch user data
                     db.collection("users").document(currentUser!!.uid).get()
                         .addOnSuccessListener { document ->
-                            communityUserId = document.getString("communityUserId")
-                            // Determine initial screen based on communityUserId
-                            initialScreen = if (communityUserId.isNullOrEmpty()) {
-                                Screen.JoinCreate
-                            } else {
-                                Screen.CommunityHome
+                            user = document.toObject(User::class.java)
+                            // Fetch community data if communityId is available
+                            user?.communityUserId?.let { communityId ->
+                                if (communityId.isNotEmpty()) {
+                                    db.collection("communities").document(communityId).get()
+                                        .addOnSuccessListener { communityDoc ->
+                                            community = communityDoc.toObject(Community::class.java)
+                                        }
+                                }
                             }
+                            isUserDataFetched = true
                         }
-                        .addOnFailureListener {
-                        }
+                } else {
+                    user = null
+                    community = null
                 }
             }
+
             when (currentScreen) {
-                Screen.Home -> HomeScreen(
-                    onNavigateToLogin = { currentScreen = Screen.Login },
-                    onNavigateToJoinCreate = { currentScreen = Screen.JoinCreate },
-                    onNavigateToAboutUs = { currentScreen = Screen.AboutUs },
-                    onNavigateToCommunity = {currentScreen = Screen.CommunityHome}
-                )
+                Screen.Home -> {
+                    HomeScreen(
+                        currentUser = user,
+                        onLogout = doLogout,
+                        onNavigateToLogin = { currentScreen = Screen.Login },
+                        onNavigateToJoinCreate = {
+                            currentScreen =
+                                if (user?.communityUserId.isNullOrEmpty()) Screen.JoinCreate
+                                else Screen.CommunityHome
+                        },
+                        onNavigateToAboutUs = { currentScreen = Screen.AboutUs },
+                        onNavigateToCommunity = { currentScreen = Screen.CommunityHome }
+                    )
+                }
 
                 Screen.Login -> LoginScreen(
-                    onLoginSuccess = { currentScreen = initialScreen },
+                    onLoginSuccess = {
+                        currentUser = auth.currentUser
+                        if (isUserDataFetched) {
+                            currentScreen =
+                                if (user?.communityUserId.isNullOrEmpty()) Screen.JoinCreate
+                                else Screen.CommunityHome
+                        } else {
+                            currentScreen = Screen.Profile
+                        }
+                    },
                     onNavigateToRegistration = { currentScreen = Screen.Registration }
                 )
 
@@ -64,31 +113,47 @@ class MainActivity : AppCompatActivity() {
                     }
                 )
 
-                Screen.JoinCreate -> JoinCreateScreen(
-                    onProfileClick = { currentScreen = Screen.Profile },
-                    onJoinClick = { currentScreen = Screen.Join },
-                    onCreateClick = { currentScreen = Screen.Create }
-                )
+                Screen.JoinCreate -> {
+                    user?.let { usr ->
+                        JoinCreateScreen(
+                            currentUser = usr,
+                            onProfileClick = { currentScreen = Screen.Profile },
+                            onJoinClick = { currentScreen = Screen.Join },
+                            onCreateClick = { currentScreen = Screen.Create }
+                        )
+                    }
+                }
 
-                Screen.Profile -> ProfileScreen(
-                    onLogout = {
-                        auth.signOut()
-                        currentUser = null
-                        currentScreen = Screen.Home
-                    },
-                    onDeleteAccount = {
-                        auth.signOut()
-                        currentUser = null
-                        currentScreen = Screen.Home
-                    },
-                    onLeaveCommunity = { /*TODO*/ },
-                    onBackPress = { currentScreen = initialScreen })
 
-                Screen.Join -> JoinScreen(
-                    onProfileClick = { currentScreen = Screen.Profile },
-                    onBackPress = { currentScreen = Screen.JoinCreate },
-                    onJoinedSuccessfully = { currentScreen = Screen.CommunityHome }
-                )
+                Screen.Profile -> {
+                    user?.let { usr ->
+                        // Directly pass community, which can be null, to ProfileScreen
+                        ProfileScreen(
+                            currentUser = usr,
+                            currentCommunity = community, // Can be null, and that's okay
+                            onLogout = doLogout,
+                            onDeleteAccount = doLogout,
+                            onLeaveCommunity = { /*TODO*/ },
+                            onBackPress = {
+                                currentScreen = if (usr.communityUserId.isEmpty())
+                                    Screen.JoinCreate
+                                else
+                                    Screen.CommunityHome
+                            }
+                        )
+                    }
+                }
+
+                Screen.Join ->
+                    user?.let { usr ->
+                        JoinScreen(
+                            currentUser = usr,
+                            onProfileClick = { currentScreen = Screen.Profile },
+                            onBackPress = { currentScreen = Screen.JoinCreate },
+                            onJoinedSuccessfully = {
+                                currentScreen = Screen.CommunityHome }
+                        )
+                    }
 
                 Screen.Create -> CreateScreen(
                     onBackPress = { currentScreen = Screen.JoinCreate }
@@ -98,14 +163,20 @@ class MainActivity : AppCompatActivity() {
                     onBackPress = { currentScreen = Screen.Home }
                 )
 
-                Screen.CommunityHome -> CommunityHomeScreen(
-                    onProfileClick = { currentScreen = Screen.Profile },
-                    onMyLibraryClick = {},
-                    onRentedBooksClick = {},
-                    onPostBooksClick = {},
-                    onFindBooksClick = {},
-                    onAnnouncementsClick = {}
-                )
+                Screen.CommunityHome -> {
+                        user?.let { usr ->
+                            CommunityHomeScreen(
+                                currentUser = usr,
+                                community = community,
+                                onProfileClick = { currentScreen = Screen.Profile },
+                                onMyLibraryClick = {},
+                                onRentedBooksClick = {},
+                                onPostBooksClick = {},
+                                onFindBooksClick = {},
+                                onAnnouncementsClick = {}
+                            )
+                        }
+                }
             }
         }
     }

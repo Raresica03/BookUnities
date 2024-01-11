@@ -33,27 +33,21 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ProfileScreen(
+    currentUser: User?,
+    currentCommunity: Community?,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
     onLeaveCommunity: () -> Unit,
     onBackPress: () -> Unit
 ) {
 
-    val auth = FirebaseAuth.getInstance()
-    val currentUser = auth.currentUser
-    val db = FirebaseFirestore.getInstance()
-    var firstName by remember { mutableStateOf("Guest") } // Default to "Guest"
-
-    LaunchedEffect(currentUser) {
-        currentUser?.let { user ->
-            // Fetch user details from Firestore
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { document ->
-                    firstName = document.getString("firstName") ?: "Unknown"
-                }
-        }
-    }
-    val username = firstName.ifEmpty { "Guest" }
+    val username = currentUser?.firstName?.ifEmpty { "Guest" }
+    val communityName = currentCommunity?.name ?: ""
+    var communityTitle = ""
+    communityTitle = if(communityName.isNotEmpty())
+        "Part of: $communityName community"
+    else
+        "Not part of a community"
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,11 +65,25 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        if (username != null) {
+            Text(
+                text = username,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
-            text = username,
+            text = communityTitle,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             style = MaterialTheme.typography.titleMedium.copy(
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -85,7 +93,7 @@ fun ProfileScreen(
 
         // Action buttons
         Button(onClick = onLeaveCommunity, modifier = Modifier.fillMaxWidth()) {
-            Text("Leave com")
+            Text("Leave Community")
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
@@ -94,10 +102,10 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = onDeleteAccount,
-            //colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+//            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Delete acc", color = Color.White)
+            Text("Delete account", color = Color.White)
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -114,6 +122,4 @@ fun ProfileScreen(
         }
 
     }
-
-
 }

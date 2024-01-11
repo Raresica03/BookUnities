@@ -20,9 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun JoinCreateScreen(onProfileClick: () -> Unit, onJoinClick:() -> Unit, onCreateClick:() -> Unit) {
+fun JoinCreateScreen(currentUser:User,onProfileClick: () -> Unit, onJoinClick:() -> Unit, onCreateClick:() -> Unit) {
     Column {
         Navbar(
+            currentUser = currentUser,
             onProfileClick = onProfileClick
         )
         Row(
