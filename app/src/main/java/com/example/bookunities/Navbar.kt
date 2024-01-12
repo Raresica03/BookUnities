@@ -17,11 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -31,15 +26,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun Navbar(currentUser:User,onProfileClick: () -> Unit) {
 
     val username = currentUser.firstName.ifEmpty { "Guest" }
     val profilePicture =  (R.drawable.blank_profile)
-    // Define the colors for the background and shadow
     val backgroundColor = Color.LightGray.copy(alpha = 0.95f) // Slightly gray and translucent
     val shadowColor = Color.Black.copy(alpha = 0.2f) // Soft black shadow
 
@@ -77,12 +69,11 @@ fun Navbar(currentUser:User,onProfileClick: () -> Unit) {
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .clickable(onClick = onProfileClick)
-                            .size(40.dp) // Set the size of the profile picture if needed
+                            .size(40.dp)
                     )
                 }
             }
         }
-        // Shadowed Divider
         Box(
             modifier = Modifier
                 .fillMaxWidth()

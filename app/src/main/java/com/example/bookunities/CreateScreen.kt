@@ -41,7 +41,6 @@ fun CreateScreen( onBackPress:() -> Unit) {
     val storageRef = FirebaseStorage.getInstance().reference
     val db = FirebaseFirestore.getInstance()
 
-    // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -140,7 +139,7 @@ fun uploadImageToFirebaseStorage(uri: Uri, storageRef: StorageReference, onUrlAv
             val downloadUrl = task.result.toString()
             onUrlAvailable(downloadUrl)
         } else {
-            // Handle failure, e.g., log the error or show a message
+            /* TODO */
         }
     }
 }

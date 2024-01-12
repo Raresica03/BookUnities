@@ -72,13 +72,11 @@ class MainActivity : AppCompatActivity() {
 
             LaunchedEffect(currentUser, user) {
                 if (currentUser != null) {
-                    // Here happens the fetching of data
                     db.collection("users").document(currentUser!!.uid).get()
                         .addOnSuccessListener { document ->
 
                             val fetchedUser = document.toObject(User::class.java)
                             user = fetchedUser
-                            // Fetch community data if communityId is available
                             fetchedUser?.communityUserId?.let { communityId ->
                                 if (communityId.isNotEmpty()) {
                                     db.collection("communities").document(communityId).get()
@@ -147,10 +145,9 @@ class MainActivity : AppCompatActivity() {
 
                 Screen.Profile -> {
                     user?.let { usr ->
-                        // Directly pass community, which can be null, to ProfileScreen
                         ProfileScreen(
                             currentUser = usr,
-                            currentCommunity = community, // Can be null, and that's okay
+                            currentCommunity = community,
                             onLogout = doLogout,
                             onDeleteAccount = doLogout,
                             onLeaveCommunity = { newUser ->

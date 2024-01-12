@@ -34,11 +34,10 @@ fun JoinCreateScreen(currentUser:User,onProfileClick: () -> Unit, onJoinClick:()
                     1.dp,
                     Color.Black,
                     RoundedCornerShape(4.dp)
-                ) // Border for the overall layout if needed
-                .shadow(1.dp, RoundedCornerShape(4.dp)), // Shadow for some depth
+                )
+                .shadow(1.dp, RoundedCornerShape(4.dp)),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // JOIN button and description
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -58,9 +57,7 @@ fun JoinCreateScreen(currentUser:User,onProfileClick: () -> Unit, onJoinClick:()
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp)) // Spacer between buttons
-
-            // CREATE button and description
+            Spacer(modifier = Modifier.width(16.dp))
             Column(
                 modifier = Modifier
                     .weight(1f)

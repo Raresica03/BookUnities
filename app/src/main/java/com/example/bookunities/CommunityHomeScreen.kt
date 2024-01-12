@@ -1,6 +1,5 @@
 package com.example.bookunities
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,13 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun CommunityHomeScreen(
@@ -48,10 +43,9 @@ fun CommunityHomeScreen(
     var communityName by remember { mutableStateOf(community?.name) }
     var communityImage by remember { mutableStateOf(community?.imageUrl) }
 
-    // Same-sized buttons centered in the middle of the page
     val buttonModifier = Modifier
         .height(IntrinsicSize.Min)
-        .width(200.dp) // You can adjust the width to your preference
+        .width(200.dp)
 
     Column {
         Navbar(currentUser = currentUser, onProfileClick = onProfileClick)
@@ -65,7 +59,7 @@ fun CommunityHomeScreen(
                 model = communityImage,
                 contentDescription = "Community Image",
                 modifier = Modifier
-                    .size(150.dp) // Square size
+                    .size(150.dp)
                     .padding(top = 16.dp),
                 contentScale = ContentScale.Crop
             )
@@ -106,7 +100,6 @@ fun CommunityHomeScreen(
             }
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Row for the last two buttons, spaced evenly and of the same size
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()

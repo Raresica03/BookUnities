@@ -34,7 +34,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegistration: () -> Unit
     var password by remember { mutableStateOf("pass12") }
     var loginMessage by remember { mutableStateOf("") }
 
-    // Get the SoftwareKeyboardController instance
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -59,7 +58,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegistration: () -> Unit
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                // Hide the keyboard
                 keyboardController?.hide()
                 val trimmedEmail = email.trim()
                 if (trimmedEmail.isValidEmail()) {

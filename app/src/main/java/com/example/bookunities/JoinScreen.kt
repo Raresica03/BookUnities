@@ -125,7 +125,6 @@ fun handleJoinCommunity(
     val db = FirebaseFirestore.getInstance()
     val userId = auth.currentUser?.uid ?: return
 
-// Update the user's communityUserId
     db.collection("users").document(userId)
         .update("communityUserId", communityId)
         .addOnSuccessListener {
