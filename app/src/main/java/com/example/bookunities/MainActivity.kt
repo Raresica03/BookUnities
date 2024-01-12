@@ -1,20 +1,18 @@
 package com.example.bookunities
 
+import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-import androidx.compose.runtime.*
 import com.google.firebase.firestore.FirebaseFirestore
 
 enum class Screen {
-    Home, Login, Registration, JoinCreate, Profile, Join, AboutUs, Create, CommunityHome
+    Home, Login, Registration, JoinCreate, Profile, Join, AboutUs, Create, CommunityHome, PostBooks, FindBooks
 }
 
 data class Community(
@@ -29,6 +27,13 @@ data class User(
     val firstName: String = "",
     val phoneNumber: String = "",
     var communityUserId: String = ""
+)
+
+data class Book(
+    val name: String = "",
+    val bookUserId: String = "",
+    val bookCommunityId: String = "",
+    val imageUrl: String = "",
 )
 
 class MainActivity : AppCompatActivity() {
@@ -192,10 +197,28 @@ class MainActivity : AppCompatActivity() {
                             onProfileClick = { currentScreen = Screen.Profile },
                             onMyLibraryClick = {},
                             onRentedBooksClick = {},
-                            onPostBooksClick = {},
-                            onFindBooksClick = {},
+                            onPostBooksClick = { currentScreen = Screen.PostBooks},
+                            onFindBooksClick = { currentScreen = Screen.FindBooks },
                             onAnnouncementsClick = {}
                         )
+                    }
+                }
+
+                Screen.PostBooks -> {
+                    user?.let  { usr ->
+                        PostBookScreen (
+                            onBackPress = {currentScreen = Screen.CommunityHome }
+                        )
+                    }
+                }
+
+                Screen.FindBooks -> {
+                    user?.let {
+                        usr -> FindBookPage(
+                        currentUser = usr,
+                        onProfileClick = { currentScreen = Screen.Profile },
+                        onBackPress = { currentScreen = Screen.CommunityHome },
+                    )
                     }
                 }
             }
